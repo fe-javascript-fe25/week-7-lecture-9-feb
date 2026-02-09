@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="./styles/index.css" />
+        <script src="./scripts/index.js" defer></script>
+        <title>MyPokèDB</title>
+    </head>
+    <body>
+        <!-- Page Wrapper -->
+        <div class="wrapper">
+            <!-- Page Header -->
+            <header class="header">
+                <h1 class="header__title">MyPokéDB</h1>
+                <nav class="header__nav">
+                    <ul class="header__menu">
+                        <li class="header__menu-item" id="pokedexLink">
+                            Pokédex
+                        </li>
+                        <li class="header__menu-item" id="generateLink">
+                            Team Generator
+                        </li>
+                        <li class="header__menu-item" id="searchLink">
+                            Search Pokemon
+                        </li>
+                    </ul>
+                </nav>
+            </header>
+
+            <!-- Pokedex Section -->
+            <section class="section" id="pokedexSection">
+                <h2 class="section__title">Pokédex</h2>
+                <section class="section__pkmn-container" id="pokedex"></section>
+            </section>
+
+            <!-- Pokedex Section -->
+            <section class="section" id="generateSection">
+                <h2 class="section__title">Team Generator</h2>
+                <form class="section__form">
+                    <label class="section__form-label">
+                        Type:
+                        <select
+                            class="section__form-select"
+                            name="pokemonTypes"
+                            id="pokemonTypes"
+                        >
+                            <option value="" class="section__form-option">
+                                - Choose type here (optional) -
+                            </option>
+                            <option value="normal" class="section__form-option">
+                                Normal
+                            </option>
+                            <option value="fire" class="section__form-option">
+                                Fire
+                            </option>
+                            <option value="water" class="section__form-option">
+                                Water
+                            </option>
+                            <option
+                                value="electric"
+                                class="section__form-option"
+                            >
+                                Electric
+                            </option>
+                            <option value="grass" class="section__form-option">
+                                Grass
+                            </option>
+                            <option value="ice" class="section__form-option">
+                                Ice
+                            </option>
+                            <option
+                                value="fighting"
+                                class="section__form-option"
+                            >
+                                Fighting
+                            </option>
+                            <option value="poison" class="section__form-option">
+                                Poison
+                            </option>
+                            <option value="ground" class="section__form-option">
+                                Ground
+                            </option>
+                            <option value="flying" class="section__form-option">
+                                Flying
+                            </option>
+                            <option
+                                value="psychic"
+                                class="section__form-option"
+                            >
+                                Psychic
+                            </option>
+                            <option value="bug" class="section__form-option">
+                                Bug
+                            </option>
+                            <option value="rock" class="section__form-option">
+                                Rock
+                            </option>
+                            <option value="ghost" class="section__form-option">
+                                Ghost
+                            </option>
+                            <option value="dragon" class="section__form-option">
+                                Dragon
+                            </option>
+                        </select>
+                    </label>
+                    <label class="section__form-label">
+                        Team Size:
+                        <input
+                            type="number"
+                            id="teamSize"
+                            min="1"
+                            max="151"
+                            class="section__form-input"
+                        />
+                    </label>
+                    <button class="section__form-button" id="generateBtn">
+                        Generate!
+                    </button>
+                </form>
+                <section
+                    class="section__pkmn-container"
+                    id="generate"
+                ></section>
+            </section>
+
+            <!-- Pokedex Section -->
+            <section class="section" id="searchSection">
+                <h2 class="section__title">Search Pokemon</h2>
+                <form class="section__form">
+                    <label class="section__form-label">
+                        Name:
+                        <input
+                            type="text"
+                            id="pokemonName"
+                            class="section__form-input"
+                        />
+                    </label>
+                    <button class="section__form-button" id="searchBtn">
+                        Generate!
+                    </button>
+                </form>
+                <section class="section__pkmn-container" id="search"></section>
+            </section>
+        </div>
+    </body>
+</html>
