@@ -14,10 +14,14 @@ if(location.pathname === '/' || location.pathname === '/index.html') {
 
 async function singlePageSetup() {
     log('singlePageSetup()');
-    
-    // document.querySelector('#pokemonName').textContent = pokemon.name;
 
-    // document.querySelector('#pokedex').appendChild(createCard(pokemon));
+    const params = new URLSearchParams(window.location.search);
+    const value = params.get('pokemon');
+    const pokemon = await fetchPokemonDetails(value);
+    
+    document.querySelector('#pokemonName').textContent = pokemon.name;
+
+    document.querySelector('#pokedex').appendChild(createCard(pokemon));
 }
 
 // pageSetup();
@@ -34,7 +38,7 @@ function pageSetup() {
     }
     pokedexSetup();
     // generatorSetup();
-    // searchSetup();
+    searchSetup();
 }
 
 function displayActiveSection(event) {
@@ -61,11 +65,37 @@ async function pokedexSetup() {
 
     const pokedexRef = document.querySelector('#pokedex');
     pokedexRef.innerHTML = '';
+    const pokemons = await fetchAllPokemons(151);
+    console.log(pokemons);
+    
 
     for(let pokemon of pokemons) {
+        const pokemonDetails = await fetchPokemonDetails(pokemon.name);
+        console.log(pokemonDetails);
         
-        const card = createCard(pokemon);
+        const card = createCard(pokemonDetails);
         pokedexRef.appendChild(card);
+    }
+}
+
+async function fetchPokemonDetails(name) {
+    try {
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
+        const details = await response.json();
+        return details;
+    } catch(error) {
+        console.error(error.message);
+    }
+    
+}
+
+async function fetchAllPokemons(limit) {
+    try {
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=0`);
+        const pokemons = await response.json();
+        return pokemons.results;
+    } catch(error) {
+        console.error(error.message);
     }
 }
 
@@ -126,11 +156,37 @@ function generatePokemon(event) {
 async function searchSetup() {
     log('searchSetup()');
 
+    const pokemons = await fetchAllPokemons(10000);
+    const listRef = document.querySelector('#searchList');
+    document.querySelector('#pokemonName').addEventListener('input', (event) => {
+        const matching = pokemons.filter(pokemon => pokemon.name.toLowerCase().includes(event.target.value.toLowerCase()));
+        listRef.innerHTML = '';
+        console.log(matching);
+
+        for(let pkmn of matching) {
+            const listItemRef = document.createElement('li');
+            listItemRef.classList.add('section__search-item');
+            listItemRef.textContent = pkmn.name;
+            listRef.appendChild(listItemRef);
+            listRef.addEventListener('click', (event) => {
+                document.querySelector('#pokemonName').value = event.target.textContent;
+                listRef.innerHTML = '';
+            });
+        }
+        
+        document.querySelector('#searchBtn').addEventListener('click', (event) => {
+            searchPokemon(event);
+        })
+    });
+
+
 }
 
 async function searchPokemon(event) {
     event.preventDefault();
     log('searchPokemon()');
+
+    const pokemons = await fetchAllPokemons(10000);
 
     let query = document.querySelector('#pokemonName').value.toLowerCase().trim();
     let results = pokemons.filter(pokemon => pokemon.name.toLowerCase().includes(query));
@@ -139,7 +195,7 @@ async function searchPokemon(event) {
     searchRef.innerHTML = '';
 
     for(let pokemon of results) {
-        
+        const pokemonDetails = await fetchPokemonDetails(pokemon.name)
         const card = createCard(pokemonDetails);
         searchRef.appendChild(card);
     }
@@ -152,10 +208,10 @@ function createCard(pokemon) {
     const cardTemplate = `
         <div class="card__top">
             <img
-                src="${''}"
+                src="${pokemon.sprites.front_default}"
                 alt="${pokemon.name}"
                 class="card__image"
-                style="background-color: ${''};"
+                style="background-color: ${getTypeColor(pokemon.types[0].type.name)};"
             />
             <span class="card__index">${getIndexString(pokemon.id)}</span>
         </div>
@@ -164,14 +220,14 @@ function createCard(pokemon) {
             <h4 class="card__type">${getTypeString(pokemon.types)}</h4>
         </div>
         <div class="card__bottom">
-            <p class="card__stat">Attack: ${''}</p>
-            <p class="card__stat">Defense: ${''}</p>
-            <p class="card__stat">Sp. Attack: ${''}</p>
-            <p class="card__stat">Sp. Defense: ${''}</p>
-            <p class="card__stat">HP: ${''}</p>
-            <p class="card__stat">Speed: ${''}</p>
+            <p class="card__stat">Attack: ${pokemon.stats[1].base_stat}</p>
+            <p class="card__stat">Defense: ${pokemon.stats[2].base_stat}</p>
+            <p class="card__stat">Sp. Attack: ${pokemon.stats[3].base_stat}</p>
+            <p class="card__stat">Sp. Defense: ${pokemon.stats[4].base_stat}</p>
+            <p class="card__stat">HP: ${pokemon.stats[0].base_stat}</p>
+            <p class="card__stat">Speed: ${pokemon.stats[5].base_stat}</p>
             <p class="card__stat card__stat--span-two">
-                Total: ${''}
+                Total: ${getStatsTotal(pokemon.stats)}
             </p>
         </div>
     `;
@@ -179,6 +235,7 @@ function createCard(pokemon) {
     cardRef.innerHTML = cardTemplate;    
 
     cardRef.addEventListener('click', (event) => {
+        location.href = `/single.html?pokemon=${pokemon.name}`;
         
     });
 
@@ -207,7 +264,7 @@ function getIndexString(id) {
 
 function getTypeString(type) {
     if(type.length === 1) {
-        return type[0].name;
+        return type[0].type.name;
     } else {
         return `${type[0].type.name} / ${type[1].type.name}`;
     }

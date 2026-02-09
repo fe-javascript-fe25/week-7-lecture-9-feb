@@ -14,7 +14,6 @@
 //     .then(data => data)
 //     .catch(error => console.error(error.message));
 
-
 pageSetup();
 
 async function pageSetup() {
